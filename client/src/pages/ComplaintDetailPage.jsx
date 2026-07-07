@@ -5,10 +5,19 @@ import StatusTracker from "../components/citizen/StatusTracker";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import PageLoader from "../components/ui/PageLoader";
+import { useAuth } from "../context/AuthContext";
 import { STATUS_META, PRIORITY_META, formatLabel } from "../utils/status";
+
+const backLinkByRole = {
+  citizen: { to: "/my-complaints", label: "← Back to my complaints" },
+  admin: { to: "/admin", label: "← Back to admin dashboard" },
+  worker: { to: "/worker", label: "← Back to my tasks" },
+};
 
 const ComplaintDetailPage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const backLink = backLinkByRole[user?.role] || { to: "/", label: "← Back" };
   const [complaint, setComplaint] = useState(null);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,8 +45,8 @@ const ComplaintDetailPage = () => {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <Link to="/my-complaints" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-        ← Back to my complaints
+      <Link to={backLink.to} className="text-sm font-medium text-brand-600 hover:text-brand-700">
+        {backLink.label}
       </Link>
 
       <Card className="space-y-5">

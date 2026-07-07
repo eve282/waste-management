@@ -39,10 +39,19 @@ const AssignWorkerModal = ({ complaint, workers, onClose, onAssign }) => {
         </>
       }
     >
-      <p className="mb-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
-        <span className="font-medium capitalize">{formatLabel(complaint.category)}</span> —{" "}
-        {complaint.description}
-      </p>
+      <div className="mb-4 flex gap-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+        {complaint.imageUrl && (
+          <img
+            src={complaint.imageUrl}
+            alt="complaint"
+            className="h-16 w-16 shrink-0 rounded-lg object-cover ring-1 ring-slate-200"
+          />
+        )}
+        <p>
+          <span className="font-medium capitalize">{formatLabel(complaint.category)}</span> —{" "}
+          {complaint.description}
+        </p>
+      </div>
 
       <Field label="Worker">
         {workers.length === 0 ? (

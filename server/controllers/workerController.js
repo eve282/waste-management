@@ -11,14 +11,22 @@ const getMyTasks = async (req, res, next) => {
     const worker = await Worker.findOne({ userId: req.user._id });
     if (!worker) return res.status(404).json({ message: "Worker profile not found" });
 
-    const tasks = await Complaint.find({
-      assignedWorkerId: worker._id,
-      status: { $in: ["assigned", "in_progress"] },
-    })
-      .populate("userId", "name phone address")
-      .sort({ priority: -1, createdAt: 1 });
+    const [active, completed] = await Promise.all([
+      Complaint.find({
+        assignedWorkerId: worker._id,
+        status: { $in: ["assigned", "in_progress"] },
+      })
+        .populate("userId", "name phone address")
+        .sort({ priority: -1, createdAt: 1 }),
+      Complaint.find({
+        assignedWorkerId: worker._id,
+        status: "resolved",
+      })
+        .populate("userId", "name phone address")
+        .sort({ resolvedAt: -1 }),
+    ]);
 
-    res.json(tasks);
+    res.json({ active, completed });
   } catch (err) {
     next(err);
   }
