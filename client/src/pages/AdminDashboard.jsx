@@ -72,24 +72,24 @@ const AdminDashboard = () => {
   };
 
   const handleAssign = async (complaintId, workerId) => {
-    await api.patch(`/admin/complaints/${complaintId}/assign`, { workerId });
+    await api.post(`/admin/complaints/${complaintId}/assign`, { workerId });
     setModalComplaint(null);
     loadData();
   };
 
   const handleStatusChange = async (complaintId, status) => {
-    await api.patch(`/admin/complaints/${complaintId}/status`, { status });
+    await api.post(`/admin/complaints/${complaintId}/status`, { status });
     loadData();
   };
 
   const handleSaveWorker = async (workerId, form) => {
-    await api.patch(`/admin/workers/${workerId}`, form);
+    await api.post(`/admin/workers/${workerId}`, form);
     setEditingWorker(null);
     loadData();
   };
 
   const handleToggleWorkerActive = async (worker) => {
-    await api.patch(`/admin/workers/${worker._id}/status`, { isActive: !worker.isActive });
+    await api.post(`/admin/workers/${worker._id}/status`, { isActive: !worker.isActive });
     loadData();
   };
 

@@ -10,6 +10,8 @@ router.use(protect, authorize("worker"));
 
 router.get("/tasks", asyncHandler(getMyTasks));
 router.patch("/tasks/:id/start", asyncHandler(startTask));
+router.post("/tasks/:id/start", asyncHandler(startTask));
 router.patch("/tasks/:id/resolve", upload.single("image"), asyncHandler(resolveTask));
+router.post("/tasks/:id/resolve", upload.single("image"), asyncHandler(resolveTask));
 
 module.exports = router;

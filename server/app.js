@@ -36,16 +36,33 @@ const allowedOrigins = new Set([
   "http://127.0.0.1:5173",
 ]);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) return callback(null, true);
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    },
-    credentials: true,
-    maxAge: 0,
-  })
-);
+const isDevLocalOrigin = (origin) => {
+  if (process.env.NODE_ENV === "production") return false;
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch (err) {
+    return false;
+  }
+};
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin) || isDevLocalOrigin(origin)) {
+      return callback(null, true);
+    }
+    logger.warn("Blocked CORS origin", { origin, allowedOrigins: [...allowedOrigins] });
+    callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Authorization", "Content-Type"],
+  optionsSuccessStatus: 204,
+  maxAge: 0,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

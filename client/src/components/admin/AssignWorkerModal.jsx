@@ -7,17 +7,28 @@ import { formatLabel } from "../../utils/status";
 const AssignWorkerModal = ({ complaint, workers, onClose, onAssign }) => {
   const [workerId, setWorkerId] = useState(workers[0]?._id || "");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setWorkerId(workers[0]?._id || "");
+    setError("");
   }, [complaint, workers]);
 
   if (!complaint) return null;
 
   const handleAssign = async () => {
     setSaving(true);
+    setError("");
     try {
       await onAssign(complaint._id, workerId);
+    } catch (err) {
+      const details = err.response
+        ? `Server responded ${err.response.status}: ${err.response.data?.message || err.message}`
+        : `${err.code || "NETWORK_ERROR"}: ${err.message}`;
+      setError(
+        err.response?.data?.message ||
+          `Assignment failed. ${details}. Please check that the backend server is running from this project.`
+      );
     } finally {
       setSaving(false);
     }
@@ -66,6 +77,8 @@ const AssignWorkerModal = ({ complaint, workers, onClose, onAssign }) => {
           </Select>
         )}
       </Field>
+
+      {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
     </Modal>
   );
 };

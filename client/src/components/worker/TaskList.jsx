@@ -44,7 +44,7 @@ const TaskList = () => {
     setActioningId(taskId);
     setTaskErrors((prev) => ({ ...prev, [taskId]: "" }));
     try {
-      await api.patch(`/worker/tasks/${taskId}/start`);
+      await api.post(`/worker/tasks/${taskId}/start`);
       await loadTasks();
     } catch (err) {
       setTaskErrors((prev) => ({ ...prev, [taskId]: err.response?.data?.message || "Failed to start task." }));
@@ -59,7 +59,7 @@ const TaskList = () => {
     try {
       const formData = new FormData();
       if (proofImages[taskId]) formData.append("image", proofImages[taskId]);
-      await api.patch(`/worker/tasks/${taskId}/resolve`, formData, {
+      await api.post(`/worker/tasks/${taskId}/resolve`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       await loadTasks();
